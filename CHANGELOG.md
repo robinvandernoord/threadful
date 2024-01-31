@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.1.1 (2024-01-31)
+
+### Documentation
+
+* Added examples with `.catch()` ([`61647ef`](https://github.com/robinvandernoord/threadful/commit/61647efa7d78fafd4b2531d2410f51c81b5e9a3a))
+
 ## v0.1.0 (2024-01-31)
 
 ### Feature
