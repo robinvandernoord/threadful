@@ -36,8 +36,29 @@ time.sleep(15) # after the thread is done:
 promise.result() # Ok(" done ")
 
 # alternative to sleep:
-result = promise.join() # Ok(" done ") if success, Err(Exception) if the thread raised an exception
+result = promise.join() # " done " if success, raises if the thread raised an exception
 ```
+
+```python
+
+@thread()
+def raises() -> str:
+  raises ValueError()
+
+
+promise = raises().catch(lambda err: TypeError())
+
+promise.join() # raises TypeError
+promise.result() # Err(TypeError)
+
+
+promise = raises().catch(lambda err: "Something went wrong")
+
+promise.join()  # returns the string "Something went wrong"
+
+```
+
+
 
 ## License
 `threadful` is distributed under the terms of the [MIT](https://spdx.org/licenses/MIT.html) license.

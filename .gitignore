@@ -4,3 +4,7 @@ venv*
 *.pyc
 coverage.*
 .coverage
+build/
+dist/
+*.egg
+*.egg-info

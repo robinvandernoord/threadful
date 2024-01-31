@@ -53,7 +53,9 @@ def test_error():
     with pytest.raises(TypeError):
         promise.join()
 
+    err = promise.result().unwrap_err()
+    assert isinstance(err, TypeError)
+
     promise = fails(0.5).catch(lambda err: 0)
 
     assert promise.join() == 0
-
