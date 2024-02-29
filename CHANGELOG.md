@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.1 (2024-02-29)
+
+### Fix
+
+* Use thread.join() instead of thread.result().unwrap() to raise the right exception instead of UnwrapError ([`496b0ae`](https://github.com/robinvandernoord/threadful/commit/496b0ae09e42dff67805352d3d8de1e6b4d2b79d))
+
 ## v0.2.0 (2024-02-29)
 
 ### Feature
