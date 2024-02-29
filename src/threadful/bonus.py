@@ -88,7 +88,7 @@ def _animate(
         time.sleep(speed)
 
     print("\r ", **_print_kwargs)
-    return thread.result().unwrap()
+    return thread.join()
 
 
 @typing.overload

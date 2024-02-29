@@ -98,7 +98,7 @@ class ThreadWithReturn(typing.Generic[R], threading.Thread):
         Attach a callback (which runs in the thread as well) on error.
 
         You can either return a new Exception or a fallback value.
-        Returns 'self' so you can do .then().then().then().
+        Returns 'self' so you can do .then().catch().catch().
         """
         self._catch.append(callback)
 
