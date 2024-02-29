@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.0 (2024-02-29)
+
+### Feature
+
+* New bonus feature 'animate' to show an animation while waiting for a thread ([`aba27f3`](https://github.com/robinvandernoord/threadful/commit/aba27f3a9d11b9ee6952d04c6bdce93daaefc286))
+
 ## v0.1.1 (2024-01-31)
 
 ### Documentation
