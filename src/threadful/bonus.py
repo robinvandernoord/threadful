@@ -59,14 +59,16 @@ def toggle_cursor(enabled: bool = True) -> typing.Generator[None, None, None]:
 @threadify
 def _animate_threaded(
     thread: ThreadWithReturn[T],
+    text: str = "",
     speed: float = 0.05,
     animation: tuple[str, ...] = ("⣷", "⣯", "⣟", "⡿", "⢿", "⣻", "⣽", "⣾"),
 ) -> T:
-    return _animate(thread, speed, animation)
+    return _animate(thread, text, speed, animation)
 
 
 def _animate(
     thread: ThreadWithReturn[T],
+    text: str = "",
     speed: float = 0.05,
     animation: tuple[str, ...] = ("⣷", "⣯", "⣟", "⡿", "⢿", "⣻", "⣽", "⣾"),
 ) -> T:
@@ -84,7 +86,7 @@ def _animate(
     idx = 0
     while not thread.is_done():
         idx += 1
-        print(animation[idx % len(animation)], **_print_kwargs)
+        print(animation[idx % len(animation)], " ", text, **_print_kwargs)
         time.sleep(speed)
 
     print("\r ", **_print_kwargs)
@@ -95,6 +97,7 @@ def _animate(
 def animate(
     thread: ThreadWithReturn[T],
     threaded: typing.Literal[True],
+    text: str = "",
     speed: float = 0.05,
     animation: tuple[str, ...] = (),
     _hide_cursor: bool = True,
@@ -108,6 +111,7 @@ def animate(
 def animate(
     thread: ThreadWithReturn[T],
     threaded: typing.Literal[False] = False,
+    text: str = "",
     speed: float = 0.05,
     animation: tuple[str, ...] = (),
     _hide_cursor: bool = True,
@@ -120,6 +124,7 @@ def animate(
 def animate(
     thread: ThreadWithReturn[T],
     threaded: bool = False,
+    text: str = "",
     speed: float = 0.05,
     animation: tuple[str, ...] = ("⣷", "⣯", "⣟", "⡿", "⢿", "⣻", "⣽", "⣾"),
     _hide_cursor: bool = True,
@@ -129,6 +134,7 @@ def animate(
 
     Args:
         thread (ThreadWithReturn): The thread to animate.
+        text (str): Extra text to show after the spinning icon
         threaded (bool): Run the animation in a thread too, unblocking the main thread.
         speed (float): The speed of the animation.
         animation (tuple): The frames of the animation.
@@ -139,6 +145,6 @@ def animate(
     """
     with toggle_cursor(enabled=_hide_cursor):
         if threaded:
-            return _animate_threaded(thread, speed, animation)
+            return _animate_threaded(thread, text, speed, animation)
         else:
-            return _animate(thread, speed, animation)
+            return _animate(thread, text, speed, animation)

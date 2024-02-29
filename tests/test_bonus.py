@@ -13,20 +13,22 @@ def wait(duration: int):
 
 def test_animate():
     input_duration = 3
+    t = "waiting sync"
     output_duration = animate(
         wait(input_duration),
+        text=t
     )
 
     assert input_duration == output_duration
 
-    print('done :)')
+    print('done :)' + " " * len(t))  # print extra spaces to remove remainder of 't'
 
 
 def test_animate_async():
     input_duration = 3
     output_thread = animate(
         wait(input_duration),
-        threaded=True
+        threaded=True,
     )
 
     hide_cursor()
