@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.2 (2024-02-29)
+
+### Fix
+
+* Add "text=..." option for animate() ([`29a9618`](https://github.com/robinvandernoord/threadful/commit/29a96180a373ad8172f5ae0d8311eb535505c8b5))
+
 ## v0.2.1 (2024-02-29)
 
 ### Fix
