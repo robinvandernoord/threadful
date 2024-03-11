@@ -56,10 +56,13 @@ def toggle_cursor(enabled: bool = True) -> typing.Generator[None, None, None]:
     show_cursor()
 
 
+T_Text: typing.TypeAlias = str | typing.Callable[[], str]
+
+
 @threadify
 def _animate_threaded(
     thread: ThreadWithReturn[T],
-    text: str = "",
+    text: T_Text = "",
     speed: float = 0.05,
     animation: tuple[str, ...] = ("⣷", "⣯", "⣟", "⡿", "⢿", "⣻", "⣽", "⣾"),
 ) -> T:
@@ -68,7 +71,7 @@ def _animate_threaded(
 
 def _animate(
     thread: ThreadWithReturn[T],
-    text: str = "",
+    text: T_Text = "",
     speed: float = 0.05,
     animation: tuple[str, ...] = ("⣷", "⣯", "⣟", "⡿", "⢿", "⣻", "⣽", "⣾"),
 ) -> T:
@@ -86,10 +89,14 @@ def _animate(
     idx = 0
     while not thread.is_done():
         idx += 1
-        print(animation[idx % len(animation)], " ", text, **_print_kwargs)
+        _text = text() if callable(text) else text
+        print(animation[idx % len(animation)], " ", _text, **_print_kwargs)
         time.sleep(speed)
 
-    print("\r ", **_print_kwargs)
+    # print enough spaces to clear text:
+    _text = text() if callable(text) else text
+    buffer_spaces = len(_text) + 1
+    print("\r ", " " * buffer_spaces, **_print_kwargs)
     return thread.join()
 
 
@@ -97,7 +104,7 @@ def _animate(
 def animate(
     thread: ThreadWithReturn[T],
     threaded: typing.Literal[True],
-    text: str = "",
+    text: T_Text = "",
     speed: float = 0.05,
     animation: tuple[str, ...] = (),
     _hide_cursor: bool = True,
@@ -111,7 +118,7 @@ def animate(
 def animate(
     thread: ThreadWithReturn[T],
     threaded: typing.Literal[False] = False,
-    text: str = "",
+    text: T_Text = "",
     speed: float = 0.05,
     animation: tuple[str, ...] = (),
     _hide_cursor: bool = True,
@@ -124,7 +131,7 @@ def animate(
 def animate(
     thread: ThreadWithReturn[T],
     threaded: bool = False,
-    text: str = "",
+    text: T_Text = "",
     speed: float = 0.05,
     animation: tuple[str, ...] = ("⣷", "⣯", "⣟", "⡿", "⢿", "⣻", "⣽", "⣾"),
     _hide_cursor: bool = True,

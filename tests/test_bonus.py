@@ -1,3 +1,4 @@
+from datetime import datetime
 import sys
 
 from threadful import thread
@@ -21,7 +22,7 @@ def test_animate():
 
     assert input_duration == output_duration
 
-    print('done :)' + " " * len(t))  # print extra spaces to remove remainder of 't'
+    print('done :)')
 
 
 def test_animate_async():
@@ -41,7 +42,18 @@ def test_animate_async():
 
     assert input_duration == output_duration
 
-    print('done :)' + " " * len(t))  # print extra spaces to remove remainder of 't'
+    # extra newline so it's below 'animating in thread':
+    print('\ndone :)')
+
+
+def test_animate_callback():
+    def text():
+        return str(datetime.now())
+
+    animate(
+        wait(1),
+        text=text,
+    )
 
 
 def test_toggle_cursor():
@@ -50,8 +62,10 @@ def test_toggle_cursor():
 
 
 if __name__ == "__main__":
-    print('1. sync')
-    test_animate()
-    print('2. async')
-    test_animate_async()
-    print('3. done')
+    # print('1. sync')
+    # test_animate()
+    # print('2. async')
+    # test_animate_async()
+    # print('3. with callback')
+    test_animate_callback()
+    print('4. done')
