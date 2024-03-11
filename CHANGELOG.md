@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.0 (2024-03-11)
+
+### Feature
+
+* **animate:** Improved 'text' handling: now supports callback function ([`b8205c4`](https://github.com/robinvandernoord/threadful/commit/b8205c4d8834e195fe253545830738e5a7d89535))
+
 ## v0.2.2 (2024-02-29)
 
 ### Fix
