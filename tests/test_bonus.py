@@ -1,8 +1,8 @@
 from datetime import datetime
 import sys
 
-from threadful import thread
-from threadful.bonus import animate, toggle_cursor, hide_cursor
+from threadful import thread, animate
+from threadful.bonus import toggle_cursor, hide_cursor
 
 
 @thread
@@ -53,6 +53,13 @@ def test_animate_callback():
     animate(
         wait(1),
         text=text,
+    )
+
+def test_clear_with():
+    animate(
+        wait(1),
+        text="running",
+        clear_with="✓",
     )
 
 

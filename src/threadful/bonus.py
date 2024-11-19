@@ -65,8 +65,9 @@ def _animate_threaded(
     text: T_Text = "",
     speed: float = 0.05,
     animation: tuple[str, ...] = ("⣷", "⣯", "⣟", "⡿", "⢿", "⣻", "⣽", "⣾"),
+    clear_with: typing.Optional[str] = None,
 ) -> T:
-    return _animate(thread, text, speed, animation)
+    return _animate(thread, text=text, speed=speed, animation=animation, clear_with=clear_with)
 
 
 def _animate(
@@ -74,6 +75,7 @@ def _animate(
     text: T_Text = "",
     speed: float = 0.05,
     animation: tuple[str, ...] = ("⣷", "⣯", "⣟", "⡿", "⢿", "⣻", "⣽", "⣾"),
+    clear_with: typing.Optional[str] = None,
 ) -> T:
     """
     Private function to animate a loading spinner while a thread is running.
@@ -82,6 +84,7 @@ def _animate(
         thread (ThreadWithReturn): The thread to animate.
         speed (float): The speed of the animation.
         animation (tuple): The frames of the animation.
+        clear_with (str): replace the animation with a specific character instead of clearing the text line
 
     Returns:
         T: The result of the thread.
@@ -95,8 +98,13 @@ def _animate(
 
     # print enough spaces to clear text:
     _text = text() if callable(text) else text
-    buffer_spaces = len(_text) + 1
-    print("\r ", " " * buffer_spaces, **_print_kwargs)
+
+    if clear_with:
+        print(clear_with, " ", _text, "\n", **_print_kwargs)
+    else:
+        buffer_spaces = len(_text) + 1
+        print("\r ", " " * buffer_spaces, **_print_kwargs)
+
     return thread.join()
 
 
@@ -107,6 +115,7 @@ def animate(
     text: T_Text = "",
     speed: float = 0.05,
     animation: tuple[str, ...] = (),
+    clear_with: typing.Optional[str] = None,
     _hide_cursor: bool = True,
 ) -> ThreadWithReturn[T]:
     """
@@ -121,6 +130,7 @@ def animate(
     text: T_Text = "",
     speed: float = 0.05,
     animation: tuple[str, ...] = (),
+    clear_with: typing.Optional[str] = None,
     _hide_cursor: bool = True,
 ) -> T:
     """
@@ -134,6 +144,7 @@ def animate(
     text: T_Text = "",
     speed: float = 0.05,
     animation: tuple[str, ...] = ("⣷", "⣯", "⣟", "⡿", "⢿", "⣻", "⣽", "⣾"),
+    clear_with: typing.Optional[str] = None,
     _hide_cursor: bool = True,
 ) -> T | ThreadWithReturn[T]:
     """
@@ -141,10 +152,12 @@ def animate(
 
     Args:
         thread (ThreadWithReturn): The thread to animate.
-        text (str): Extra text to show after the spinning icon
+        text (str): Extra text to show after the spinning icon.
+            This can be a static value or a callback that's ran at every interval.
         threaded (bool): Run the animation in a thread too, unblocking the main thread.
-        speed (float): The speed of the animation.
+        speed (float): The speed of the animation (seconds between animation intervals, defaults to 50ms).
         animation (tuple): The frames of the animation.
+        clear_with (str): replace the animation with a specific character instead of clearing the text line
         _hide_cursor (bool): If True, the cursor is hidden during the animation.
 
     Returns:
@@ -152,6 +165,6 @@ def animate(
     """
     with toggle_cursor(enabled=_hide_cursor):
         if threaded:
-            return _animate_threaded(thread, text, speed, animation)
+            return _animate_threaded(thread, text=text, speed=speed, animation=animation, clear_with=clear_with)
         else:
-            return _animate(thread, text, speed, animation)
+            return _animate(thread, text=text, speed=speed, animation=animation, clear_with=clear_with)
