@@ -2,9 +2,11 @@
 Very simple threading abstraction.
 """
 
+import contextlib
 import functools
 import threading
 import typing
+from copy import copy
 
 from result import Err, Ok, Result
 from typing_extensions import Self
@@ -39,6 +41,16 @@ class ThreadWithReturn(typing.Generic[R], threading.Thread):
         self._callbacks = []
         self._catch = []
 
+    def start(self) -> Self:  # type: ignore
+        """
+        Normally, starting multiple times will lead to an error.
+
+        This version ignores duplicate starts.
+        """
+        with contextlib.suppress(RuntimeError):
+            super().start()
+        return self
+
     def run(self) -> None:
         """
         Called in a new thread and handles the calling logic.
@@ -59,7 +71,9 @@ class ThreadWithReturn(typing.Generic[R], threading.Thread):
         finally:
             # Avoid a refcycle if the thread is running a function with
             # an argument that has a member that points to the thread.
-            del self._target, self._args, self._kwargs, self._callbacks
+            self._callbacks.clear()
+            self._catch.clear()
+            del self._target, self._args, self._kwargs
             # keep self._return for .result()
 
     def result(self) -> "Result[R, Exception | None]":
@@ -68,6 +82,7 @@ class ThreadWithReturn(typing.Generic[R], threading.Thread):
 
         If the thread is not ready, Err(None) is returned.
         """
+        self.start()
         if self.is_alive():
             # still busy
             return Err(None)
@@ -82,6 +97,7 @@ class ThreadWithReturn(typing.Generic[R], threading.Thread):
         """
         Returns whether the thread has finished (result or error).
         """
+        self.start()
         return not self.is_alive()
 
     def then(self, callback: typing.Callable[[R], R]) -> Self:
@@ -90,8 +106,9 @@ class ThreadWithReturn(typing.Generic[R], threading.Thread):
 
         Returns 'self' so you can do .then().then().then().
         """
-        self._callbacks.append(callback)
-        return self  # for builder pattern
+        new = copy(self)
+        new._callbacks.append(callback)
+        return new  # builder pattern
 
     def catch(self, callback: typing.Callable[[Exception | R], Exception | R]) -> Self:
         """
@@ -100,14 +117,15 @@ class ThreadWithReturn(typing.Generic[R], threading.Thread):
         You can either return a new Exception or a fallback value.
         Returns 'self' so you can do .then().catch().catch().
         """
-        self._catch.append(callback)
-
-        return self
+        new = copy(self)
+        new._catch.append(callback)
+        return new
 
     def join(self, timeout: int | float | None = None) -> R:  # type: ignore
         """
         Enhanced version of thread.join that also returns the value or raises the exception.
         """
+        self.start()
         super().join(timeout)
 
         match self.result():
@@ -127,9 +145,7 @@ def thread(my_function: typing.Callable[P, R]) -> typing.Callable[P, ThreadWithR
 
     def wraps(*a: P.args, **kw: P.kwargs) -> ThreadWithReturn[R]:
         """Idem ditto."""
-        my_thread = ThreadWithReturn(target=my_function, args=a, kwargs=kw)
-        my_thread.start()
-        return my_thread
+        return ThreadWithReturn(target=my_function, args=a, kwargs=kw)  # code copied for mypy/ruff
 
     return wraps
 
@@ -147,9 +163,7 @@ def thread(
 
         def inner(*a: P.args, **kw: P.kwargs) -> ThreadWithReturn[R]:
             """Idem ditto."""
-            my_thread = ThreadWithReturn(target=inner_function, args=a, kwargs=kw)
-            my_thread.start()
-            return my_thread
+            return ThreadWithReturn(target=inner_function, args=a, kwargs=kw)  # code copied for mypy/ruff
 
         return inner
 
@@ -186,9 +200,10 @@ def thread(
 
     @functools.wraps(my_function)
     def wraps(*a: P.args, **kw: P.kwargs) -> ThreadWithReturn[R]:
-        my_thread = ThreadWithReturn(target=my_function, args=a, kwargs=kw)
-        my_thread.start()
-        return my_thread
+        # note: before it called .start() immediately here
+        # however, if you then attach callbacks and the thread already finishes, they would not run.
+        # now, start() is called once you check for a result() or wait for it to finish via join()
+        return ThreadWithReturn(target=my_function, args=a, kwargs=kw)
 
     return wraps
 
