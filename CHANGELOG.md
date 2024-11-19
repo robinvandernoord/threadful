@@ -2,6 +2,20 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.0 (2024-11-19)
+
+### Feature
+
+* **animate:** Add clear_with option to replace animation with a specific character once the thread is done ([`23d0460`](https://github.com/robinvandernoord/threadful/commit/23d0460d4e759be52541794ff5fbe411dfaa06b3))
+
+### Fix
+
+* **result:** Improve handling of callback functions in threading module to prevent unexpected behavior when starting threads after result retrieval ([`4a00b96`](https://github.com/robinvandernoord/threadful/commit/4a00b961c35dbf8250ed8dda7fe74565d7e3f3a3))
+
+### Documentation
+
+* Expanded examples ([`1f419c6`](https://github.com/robinvandernoord/threadful/commit/1f419c6d5f2248c7cd5914cfc3c3712578683db6))
+
 ## v0.3.0 (2024-03-11)
 
 ### Feature
