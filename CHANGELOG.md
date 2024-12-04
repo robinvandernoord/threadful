@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.5.0 (2024-12-04)
+
+### Feature
+
+* **core:** Add new join_all_* functions for thread management ([`99e1b94`](https://github.com/robinvandernoord/threadful/commit/99e1b94582bdf899ab9d9845a01f3fbd2cf7f135))
+
 ## v0.4.0 (2024-11-19)
 
 ### Feature
