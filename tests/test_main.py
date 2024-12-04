@@ -1,8 +1,9 @@
 import time
 import typing
+
 import pytest
 
-from src.threadful import thread
+from src.threadful import join_all_or_raise, join_all_results, join_all_unwrap, thread
 
 T = typing.TypeVar("T")
 
@@ -46,9 +47,7 @@ def test_error():
     promise = fails(1)
 
     assert promise.result().is_err
-    print(
-        promise.result().unwrap_err()
-    )
+    print(promise.result().unwrap_err())
 
     with pytest.raises(ValueError):
         promise.join()
@@ -76,6 +75,55 @@ def test_is_done():
     assert not promise.is_done()
     time.sleep(2)
     assert promise.is_done()
+
+
+def test_join_all_results():
+    promise_1 = slow(2)
+    promise_2 = slow(1)
+    promise_error = fails(1)
+
+    one, two, err = join_all_results(
+        promise_1,
+        promise_2,
+        promise_error,
+    )
+
+    assert one.ok() == 2
+    assert two.ok() == 1
+    assert err.err()
+
+
+def test_join_all_unwrap():
+    promise_1 = slow(2)
+    promise_2 = slow(1)
+    promise_error = fails(1)
+
+    assert join_all_unwrap(promise_1, promise_2, promise_error) == (2, 1, None)
+
+    assert join_all_or_raise(
+        promise_1,
+        promise_2,
+    ) == (2, 1)
+
+    with pytest.raises(ValueError):
+        join_all_or_raise(promise_1, promise_2, promise_error)
+
+
+def test_join_all_or_raise():
+    promise_1 = slow(2)
+    promise_2 = slow(1)
+    promise_error = fails(1)
+
+    assert join_all_or_raise(
+        promise_1,
+        promise_2,
+    ) == (2, 1)
+
+    promise_3 = slow(2)
+    promise_4 = slow(1)
+
+    with pytest.raises(ValueError):
+        join_all_or_raise(promise_3, promise_4, promise_error)
 
 
 def test_readme_examples():
@@ -116,6 +164,6 @@ def test_readme_examples():
 
     @thread()
     def fully_background() -> None:
-        print('joe')
+        print("joe")
 
     fully_background().start()

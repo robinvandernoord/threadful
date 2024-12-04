@@ -76,13 +76,18 @@ class ThreadWithReturn(typing.Generic[R], threading.Thread):
             del self._target, self._args, self._kwargs
             # keep self._return for .result()
 
-    def result(self) -> "Result[R, Exception | None]":
+    def result(self, wait: bool = False) -> "Result[R, Exception | None]":
         """
         Get the result value (Ok or Err) from the threaded function.
 
-        If the thread is not ready, Err(None) is returned.
+        By default, if the thread is not ready, Err(None) is returned.
+        If `wait` is used, this functions like a join() but with a Result.
+
         """
         self.start()
+        if wait:
+            super().join()
+
         if self.is_alive():
             # still busy
             return Err(None)
@@ -171,7 +176,7 @@ def thread(
 
 
 def thread(
-    my_function: typing.Callable[P, R] | None = None
+    my_function: typing.Callable[P, R] | None = None,
 ) -> (
     typing.Callable[[typing.Callable[P, R]], typing.Callable[P, ThreadWithReturn[R]]]
     | typing.Callable[P, ThreadWithReturn[R]]
@@ -208,7 +213,53 @@ def thread(
     return wraps
 
 
+def join_all_results(*threads: ThreadWithReturn[R]) -> tuple[Result[R, Exception], ...]:
+    """
+    Wait for all threads to complete and retrieve their results as `Result` objects.
+
+    Args:
+        *threads: A variable number of `ThreadWithReturn` instances to join.
+
+    Returns:
+        tuple[Result[R, Exception], ...]: A tuple containing `Result` objects for each thread,
+        where each result represents the success or error outcome of the thread.
+    """
+    return tuple(_.result(wait=True) for _ in threads)
+
+
+def join_all_or_raise(*threads: ThreadWithReturn[R]) -> tuple[R, ...]:
+    """
+    Wait for all threads to complete and retrieve their results, raising exceptions on failure.
+
+    Args:
+        *threads: A variable number of `ThreadWithReturn` instances to join.
+
+    Returns:
+        tuple[R, ...]: A tuple containing the successful results of each thread.
+
+    Raises:
+        Exception: If any thread raises an exception, it is propagated.
+    """
+    return tuple(_.join() for _ in threads)
+
+
+def join_all_unwrap(*threads: ThreadWithReturn[R]) -> tuple[R | None, ...]:
+    """
+    Wait for all threads to complete and retrieve their results, unwrapping successes or returning None on error.
+
+    Args:
+        *threads: A variable number of `ThreadWithReturn` instances to join.
+
+    Returns:
+        tuple[R | None, ...]: A tuple containing the results of each thread, where errors are replaced with None.
+    """
+    return tuple(_.result(wait=True).unwrap_or(None) for _ in threads)
+
+
 __all__ = [
     "ThreadWithReturn",
     "thread",
+    "join_all_or_raise",
+    "join_all_results",
+    "join_all_unwrap",
 ]
