@@ -256,10 +256,4 @@ def join_all_unwrap(*threads: ThreadWithReturn[R]) -> tuple[R | None, ...]:
     return tuple(_.result(wait=True).unwrap_or(None) for _ in threads)
 
 
-__all__ = [
-    "ThreadWithReturn",
-    "thread",
-    "join_all_or_raise",
-    "join_all_results",
-    "join_all_unwrap",
-]
+__all__ = ["ThreadWithReturn", "join_all_or_raise", "join_all_results", "join_all_unwrap", "thread"]

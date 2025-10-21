@@ -7,7 +7,7 @@ name = "threadful"
 dynamic = ["version"]
 description = 'Python Threads - from Dreadful to Threadful'
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = "MIT"
 keywords = []
 authors = [
@@ -16,9 +16,10 @@ authors = [
 classifiers = [
     "Development Status :: 4 - Beta",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
@@ -77,7 +78,7 @@ json-indent = 2
 
 
 [tool.black]
-target-version = ["py310"]
+target-version = ["py314"]
 line-length = 120
 # 'extend-exclude' excludes files or directories in addition to the defaults
 extend-exclude = '''
@@ -110,7 +111,7 @@ strict = true
 exclude = ["venv", ".bak"]
 
 [tool.ruff]
-target-version = "py310"
+target-version = "py314"
 line-length = 120
 extend-exclude = ["*.bak/", "venv*/"]
 
