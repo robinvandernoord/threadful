@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v0.6.0 (2026-09-02)
+
+### Feature
+* **bonus:** support non-interactive animation output
+
+### Fix
+* bump to python 3.12+ ; migrate to `vommit`
+
+### Documentation
+* **animate:** document non-interactive output behavior
+
 ## v0.5.1 (2025-10-21)
 
 
