@@ -24,21 +24,23 @@ pip install threadful
 ```python
 from threadful import thread
 
-@thread # with or without ()
+
+@thread  # with or without ()
 def some_function():
-  time.sleep(10)
-  return " done "
+    time.sleep(10)
+    return " done "
+
 
 # when ready, it will call these callback functions.
-some_function().then(lambda result: result.strip()).then(lambda result: print(result)) # prints: "done"
+some_function().then(lambda result: result.strip()).then(lambda result: print(result))  # prints: "done"
 
-promise = some_function() # ThreadWithResult[str] object
-promise.result() # Err(None)
-time.sleep(15) # after the thread is done:
-promise.result() # Ok(" done ")
+promise = some_function()  # ThreadWithResult[str] object
+promise.result()  # Err(None)
+time.sleep(15)  # after the thread is done:
+promise.result()  # Ok(" done ")
 
 # alternative to sleep:
-result = promise.join() # " done " if success, raises if the thread raised an exception
+result = promise.join()  # " done " if success, raises if the thread raised an exception
 ```
 
 #### What's happening:
@@ -56,13 +58,13 @@ result = promise.join() # " done " if success, raises if the thread raised an ex
 ```python
 @thread()
 def raises() -> str:
-  raise ValueError()
+    raise ValueError()
 
 
 promise = raises().catch(lambda err: TypeError())
 
-promise.join() # raises TypeError
-promise.result() # Err(TypeError)
+promise.join()  # raises TypeError
+promise.result()  # Err(TypeError)
 
 
 promise = raises().catch(lambda err: "Something went wrong")
@@ -82,13 +84,15 @@ promise.join()  # returns the string "Something went wrong"
 from threadful import thread, animate
 import time
 
+
 @thread
 def wait(duration: int):
     time.sleep(duration)
     return f"Waited for {duration} seconds"
 
+
 # Example 1: Basic animation with static text
-result = animate(wait(3), text="Waiting...") # Output: "Waited for 3 seconds"
+result = animate(wait(3), text="Waiting...")  # Output: "Waited for 3 seconds"
 
 # Example 2: Threaded animation (non-blocking)
 thread_result = animate(wait(3), text="Running asynchronously...", threaded=True)
@@ -107,6 +111,22 @@ animate(wait(3), text=lambda: f"Current time: {time.strftime('%H:%M:%S')}")
 3. **Dynamic Text**: Updates the animation text dynamically using a callback (e.g., current time). 
 
 These examples show how to use `animate` for different scenarios.
+
+### Non-interactive output (CI, pipes, redirects):
+The animation writes to `stderr` using carriage returns, which only makes sense on a terminal.
+Most CI log viewers treat a carriage return as a line break, so an animation would add a log line
+for *every frame* (20 per second by default).
+
+`animate` therefore detects whether `stderr` is a terminal. When it isn't, it writes plain log lines
+ending in a newline, and only when the text actually changed:
+
+- static text produces a single line;
+- a callback produces one line per distinct value, so `text=lambda: f"{done}/{total}"` gives you
+  real progress in your build log;
+- `clear_with` adds one final line, prefixed with that marker;
+- no text means no output at all, and the cursor escape codes are skipped.
+
+Pass `force_animation=True` or `force_animation=False` to override the detection.
 
 ---
 
