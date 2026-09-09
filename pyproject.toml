@@ -6,7 +6,7 @@ build-backend = "uv_build"
 name = "threadful"
 description = 'Python Threads - from Dreadful to Threadful'
 readme = "README.md"
-version = "0.6.0"
+version = "0.6.1"
 requires-python = ">=3.12"
 license = "MIT"
 keywords = []

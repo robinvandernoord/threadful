@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.6.1 (2026-09-09)
+
+### Fix
+* **interactive:** use pre-3.14 exception tuple syntax
+
 ## v0.6.0 (2026-09-02)
 
 ### Feature
