@@ -40,7 +40,7 @@ def _is_interactive() -> bool:
     stream = _stderr()
     try:
         return bool(stream.isatty())
-    except AttributeError, ValueError:  # pragma: no cover
+    except (AttributeError, ValueError):  # pragma: no cover
         # ValueError: I/O operation on closed file
         return False
 
